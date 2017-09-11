@@ -10,30 +10,6 @@ namespace Amvisie\Core;
  */
 abstract class BaseController implements ControllerInterface
 {
-
-    /**
-     * Initializes controller object, and objects for associated properties.
-     * @internal Infrastructure method. Do not call directly.
-     * @param \ReflectionClass $reflectionClass Reflection object of controller to be instantiated.
-     * @param \Amvisie\Core\HttpRequest $request A request object.
-     * @param \Amvisie\Core\HttpResponse $response A response object.
-     * @param \Amvisie\Core\Route $route A route object.
-     * @return \Amvisie\Core\BaseController A new instance of derived class of \Amvisie\Core\ControllerInterface.
-     */
-    public static function create(\ReflectionClass &$reflectionClass, HttpRequest &$request, HttpResponse &$response, Route &$route): ControllerInterface
-    {
-        $instance = $reflectionClass->newInstance();
-
-        $instance->route = $route;
-        $instance->request = $request;
-        $instance->viewObject = new \stdClass();
-        $instance->viewPocket = array();
-        $instance->tempPocket = new Web\TempDataArray();
-        $instance->response = $response;
-
-        return $instance;
-    }
-
     /**
      * An instance of Route class that has extracted information from URL.
      * @var \Amvisie\Core\Route

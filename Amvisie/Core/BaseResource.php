@@ -66,4 +66,11 @@ abstract class BaseResource
         }
         self::$pairs[static::class][$name] = $value;
     }
+    
+    public static function __callStatic($name, $arguments) {
+        if(!isset(self::$pairs[static::class][$name])){
+            throw new \InvalidArgumentException("'$name' is either null or not defined in " . static::class);
+        }
+        return self::$pairs[static::class][$name];
+    }
 }

@@ -27,7 +27,7 @@ abstract class BaseConverter
      */
     protected $files = [];
     
-    abstract function parse() : void;
+    abstract function parse() : bool;
 
     /**
      * Copies values from array/object into properties of given object.

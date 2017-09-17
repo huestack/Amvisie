@@ -75,7 +75,7 @@ final class Route
         self::$routes[$name] = &$array;
     }
     
-    public static function parse(string $requestUri, string $alias = '') : Route
+    public static function parse(string $requestUri, string $alias = '') : ?Route
     {
         // Checks if ROOT default is added by user. If not, define a default.
         if (!array_key_exists('ROOT', self::$routes)) {
@@ -84,7 +84,7 @@ final class Route
         
         try {
             return new Route($requestUri, $alias);
-        } catch (Exception $ex) {
+        } catch (\Exception $ex) {
             return null;;
         }
     }
@@ -191,7 +191,7 @@ final class Route
      * Gets a name of method extracted from URI or route default.
      * @return string Name of method if found; otherwise null;
      */
-    public function getMethod() : string
+    public function getMethod() : ?string
     {
         return $this->method;
     }
@@ -365,7 +365,7 @@ final class Route
         // Iterates through each ROUTE configuration and matches URL with specified route.
         foreach (self::$routes as $key => $value) {
             $routeEx = $this->buildExpression($value);
-
+            
             // Matches prepared regex with route URI.
             $matchResult = preg_match($routeEx, $this->routeUrl);
             

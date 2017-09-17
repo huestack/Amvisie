@@ -167,10 +167,10 @@ class HttpRequest
     }
 
     /**
-     * Gets an array of a file information.
-     * @return array
+     * Gets an object of HttpFile class or array of objects of HttpFile class.
+     * @return array|HttpFile
      */
-     public function &getFile(string $key) : ?array
+     public function &getFile(string $key)
      {
         return  $this->filesArray[$key];
     }

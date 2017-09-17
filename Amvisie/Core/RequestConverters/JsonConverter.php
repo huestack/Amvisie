@@ -2,7 +2,7 @@
 
 namespace Amvisie\Core\RequestConverters;
 
-use Amvisie\Core\Annotations\DataType;
+use Amvisie\Core\Annotations\PropertyTypes;
 
 /**
  * Converts json to custom object.
@@ -12,17 +12,23 @@ class JsonConverter extends BaseConverter
 {
     private $isArray;
     
-    public function parse() : void
+    public function parse() : bool
     {
         $content = ltrim(file_get_contents('php://input'));
-       
+        
+        if (strlen($content) === 0) {
+           return true; 
+        }
+        
         $this->isArray = $content[0] === '[';
         
         $this->data = json_decode($content, true);
+        
+        return $this->data !== null;
     }
     
     /**
-     * 
+
      * @param \ReflectionClass $object
      */
     public function convertAs(\ReflectionClass $object)
@@ -120,7 +126,7 @@ class JsonConverter extends BaseConverter
                 // $value could be an array or object. Get PropertyTypeInfo and determine the type.
                 $propertyTypeInfo = $instance->getMeta()->getPropertyTypeInfo($key);
                 
-                if ($propertyTypeInfo && $propertyTypeInfo->getType() === DataType::ARR) {
+                if ($propertyTypeInfo && $propertyTypeInfo->getType() === PropertyTypes::ARR) {
                     // $value is an array. Get the type (RelfectionClass) of the array.
                     $class = $propertyTypeInfo->getInfo();
                     if (!$class) {
@@ -130,7 +136,7 @@ class JsonConverter extends BaseConverter
                         // Array is of proper type.
                         $property->setValue($instance, $this->getModelArray($value, $class));
                     }
-                } else if ($propertyTypeInfo && $propertyTypeInfo->getType() === DataType::OBJ) {
+                } else if ($propertyTypeInfo && $propertyTypeInfo->getType() === PropertyTypes::OBJ) {
                     // $value is of object type.
                     $class = $propertyTypeInfo->getInfo();
                     if ($class){

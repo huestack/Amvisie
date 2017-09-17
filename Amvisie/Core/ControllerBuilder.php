@@ -26,13 +26,16 @@ final class ControllerBuilder
         $controllerFile = $route->getControllerFile();
         
         if (isset($controllerFile)) {
-            require $controllerFile;
-
             $controller = $route->getController();
 
-            $class = self::getClassName($controllerFile);
+            /**
+             * A route may return name of controller in any case possible. Also a controller may have a 
+             * namespace. So getClassName method finds first class with namespace from the file.
+             */ 
+            $class = $this->getClassName($controllerFile);
 
-            if (strtolower($class['class']) === strtolower($controller)){
+            if (strtolower($class['class']) === strtolower($controller)) {
+                require $controllerFile;
                 return $this->factory->createController(implode('\\', $class));
             } else {
                 throw new \Exception("$controller could not be loaded.");
@@ -70,17 +73,20 @@ final class ControllerBuilder
      * @author netcode, StackExchange user.
      * @link http://stackoverflow.com/a/7153391 A solution provided by <b>netcode</b>.
      */
-    private static function getClassName(string $file) : array
+    private function getClassName(string $file) : array
     {
         $fp = fopen($file, 'r');
         $class = $namespace = $buffer = '';
         $i = 0;
+        
         while (!$class) {
             if (feof($fp)) break;
 
-            $buffer .= fread($fp, 512);
-            $tokens = token_get_all($buffer);
-
+            $buffer .= fread($fp, 256);
+            
+            // Suppressing a warning that may occur due to unclosed comment.
+            $tokens = @token_get_all($buffer);
+            
             if (strpos($buffer, '{') === false) continue;
 
             for (;$i<count($tokens);$i++) {
@@ -103,7 +109,9 @@ final class ControllerBuilder
                 }
             }
         }
-
+        
+        fclose($fp);
+        
         return array('namespace' => $namespace, 'class' => $class);
     }
 }

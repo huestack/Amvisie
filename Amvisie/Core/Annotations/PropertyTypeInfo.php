@@ -12,7 +12,7 @@ class PropertyTypeInfo
     
     /**
      *
-     * @var DataType 
+     * @var PropertyTypes 
      */
     private $type;
     
@@ -24,14 +24,14 @@ class PropertyTypeInfo
      * @param int $dataType
      * @param mixed $info
      */
-    public function __construct(int $dataType = DataType::HTML_ENCODED_STRING, $mixed = null)
+    public function __construct(int $dataType = PropertyTypes::STRING, $mixed = null)
     {
         $this->type = $dataType;
         $this->mixed = $mixed;
     }
     
     /**
-     * Returns one of the constant value of DataType class
+     * Returns one of the constant value of PropertyTypes class
      * @return int 
      */
     public function getType() : int
@@ -42,14 +42,4 @@ class PropertyTypeInfo
     public function getInfo(){
         return $this->mixed;
     }
-}
-
-class DataType{
-    CONST STRING = 0;
-    CONST INTEGER = 2;
-    CONST DOUBLE = 3;
-    CONST BOOL = 4;
-    CONST DATETIME = 5;
-    CONST ARR = 6;
-    CONST OBJ = 7;
 }

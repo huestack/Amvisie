@@ -97,6 +97,8 @@ abstract class BaseController implements ControllerInterface
      */
     public function invoke(): bool
     {
+        // Cannot trust on BaseController's constructor because PHP doesn't call base class 
+        // constructor if __construct() is defined in derived class. So the initialization is done here.
         $context = AppContext::getContext();
         
         $this->route = $context->route();
@@ -241,7 +243,7 @@ abstract class BaseController implements ControllerInterface
         // Currently the implementation seems to be vague here.
     }
 
-    private function getArguments(\ReflectionMethod &$method): array
+    private function getArguments(\ReflectionMethod &$method) : array
     {
         $arguments = array();
 
@@ -249,6 +251,10 @@ abstract class BaseController implements ControllerInterface
         $params = $method->getParameters();
 
         foreach ($params as $param) {
+            if ($param->isPassedByReference()){
+                throw new \Exception("Cannot pass '" . $param->name . "' as a reference in " . $method->name . " of " . $method->class);
+            }
+                
             /* @var $param \ReflectionParameter */
             $data = null;
 
@@ -262,11 +268,11 @@ abstract class BaseController implements ControllerInterface
                 $data = $this->getScalarRequestData($param->name);
             }
 
-            if ($param->isPassedByReference()) {
-                $arguments[$param->name] = &$data;
-            } else {
-                $arguments[$param->name] = $data;
+            if( $data == null) {
+                $data = $param->getDefaultValue();
             }
+            
+            $arguments[$param->name] = $data;
         }
 
         return $arguments;

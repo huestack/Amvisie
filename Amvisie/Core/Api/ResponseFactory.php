@@ -10,7 +10,7 @@ namespace Amvisie\Core\Api;
 final class ResponseFactory {
     
     private static $types = array(
-        'application/json' => 'Amvisie\Core\Api\JsonResponse'
+        'application/json' => JsonResponse::class
     );
 
     /**

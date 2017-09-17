@@ -20,16 +20,26 @@ class UrlEncodedConverter extends BaseConverter
     public function convertAs(\ReflectionClass $object)
     {
         $instance = $object->newInstance();
+
         foreach ($this->data as $key => $value) {
             if ($object->hasProperty($key)) {
-                $instance->{$key} = htmlspecialchars($value);
+                
+                if ($instance instanceof \Amvisie\Core\BaseModel) {
+                    $propertyInfo = $instance->getMeta()->getPropertyTypeInfo($key);
+                    
+                    if($propertyInfo && $propertyInfo->getType() !== \Amvisie\Core\Annotations\PropertyTypes::ARR && is_array($value)) {
+                        continue;
+                    }
+                }
+                
+                $instance->{$key} = $value;
             }
         }
-        
+     
         return $instance;
     }
     
-    public function parse() : void
+    public function parse() : bool
     {
         if (array_search($this->getHttpMethod(), $this->usePhpInputFor) === false) {
             $this->data = filter_input_array(INPUT_POST);
@@ -37,8 +47,14 @@ class UrlEncodedConverter extends BaseConverter
             parse_str(file_get_contents('php://input'), $this->data);
             
             foreach ($this->data as $key => $value) {
+                if (\is_array($value)) {
+                    continue;
+                }
+                
                 $this->data[$key] = htmlspecialchars($value);
             }
         }
+        
+        return true;
     }
 }

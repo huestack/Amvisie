@@ -22,7 +22,7 @@ final class ConverterFactory
     public function build() : ?BaseConverter
     {
         $accept = $this->request->getContentType();
-
+        
         if (array_key_exists($accept, self::$converters)) {
             /* @var $class \ReflectionClass */
             $class = new \ReflectionClass(self::$converters[$accept]);
@@ -35,7 +35,10 @@ final class ConverterFactory
             /*@var $instance BaseConverter */
             $instance = $class->newInstance();
             $instance->setHttpMethod($this->request->getMethod());
-            $instance->parse();
+            if (!$instance->parse()) {
+                throw new ConverterException("Parse error: " . $class->name . " cannot parse '" . $accept . "' data.");
+            }
+            
             return $instance;
         } else {
             return null;

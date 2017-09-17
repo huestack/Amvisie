@@ -32,12 +32,12 @@ class ModelMeta
      * Gets all properties and their rules.
      * @return array A associative array of property-rules pair.
      */
-    public function &getAttributes($property) : array
+    public function getAttributes($property) : array
     {
         return $this->attributes[$property];
     }
     
-    public function &attributes() : array
+    public function attributes() : array
     {
         return $this->attributes;
     }
@@ -47,12 +47,12 @@ class ModelMeta
      * @param string $property Name of property.
      * @return PropertyTypeInfo
      */
-    public function &getPropertyTypeInfo($property) : \Amvisie\Core\Annotations\PropertyTypeInfo
+    public function getPropertyTypeInfo($property) : ?\Amvisie\Core\Annotations\PropertyTypeInfo
     {
-        return $this->propertyTypeInfos[$property];
+        return array_key_exists($property, $this->propertyTypeInfos) ? $this->propertyTypeInfos[$property] : null;
     }
     
-    public function &propertyTypeInfos() : array
+    public function propertyTypeInfos() : array
     {
         return $this->propertyTypeInfos;
     }
